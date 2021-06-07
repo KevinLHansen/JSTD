@@ -5,7 +5,8 @@ import {
 } from "./modules/classes.mjs";
 
 import {
-    drawVector as drawVector
+    drawVector as drawVector,
+    log as log
 } from "./modules/functions.mjs";
 
 const canvas = document.getElementById("game");
@@ -18,7 +19,7 @@ var now;
 var fps;
 var delta;
 
-const debug = true;
+var debug = false;
 
 var player;
 var projectiles = [];
@@ -51,7 +52,7 @@ function render() {
 
     // Process projectiles
     projectiles.forEach((projectile) => {
-        projectile.process(delta);
+        projectile.process(ctx, delta);
     });
 
     // Debug drawing
@@ -62,10 +63,24 @@ function render() {
         });
     }
 
+    // Purge dead entities
+    purge();
+
     // Manage timings
     delta = (performance.now() - now) / 1000;
     fps = Math.floor(1000 / delta);
     now = performance.now();
+}
+
+// Purges "dead" entities
+function purge() {
+    // Purge projectiles
+    for (let i = 0; i < projectiles.length; i++) {
+        const projectile = projectiles[i];
+        if (projectile.isDead) {
+            projectiles.splice(i, 1);
+        }
+    }
 }
 
 // EVENT LISTENERS //
@@ -80,9 +95,9 @@ window.addEventListener("click", (event) => {
         5,
         "white",
         direction,
-        5,
+        0.5,
         10,
-        1.1
+        2
     ));
 });
 
@@ -91,17 +106,20 @@ window.addEventListener("click", (event) => {
 window.addEventListener("keydown", (event) => {
     const key = event.code;
 
-    if (key == "KeyW") {
+    if (key == "KeyW") { // UP
         player.up = true;
     }
-    if (key == "KeyA") {
+    if (key == "KeyA") { // LEFT
         player.left = true;
     }
-    if (key == "KeyS") {
+    if (key == "KeyS") { // DOWN
         player.down = true;
     }
-    if (key == "KeyD") {
+    if (key == "KeyD") { // RIGHT
         player.right = true;
+    }
+    if (key == "Backquote") { // TOGGLE DEBUG
+        debug = !debug;
     }
 });
 

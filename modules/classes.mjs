@@ -34,7 +34,7 @@ export class Vector {
 
     getUnitVector() {
         const length = this.getLength();
-        if (length == 0) {
+        if (length == 0) { // Don't divide by 0
             return new Vector(0, 0);
         } else {
             return new Vector(this.x / length, this.y / length);
@@ -166,6 +166,7 @@ export class Projectile {
             direction.x * startSpeed,
             direction.y * startSpeed
         );
+        this.isDead = false;
     }
 
     draw(ctx) {
@@ -177,7 +178,7 @@ export class Projectile {
 
     drawDebug(ctx) {
         // Draw vector
-        drawVector(ctx, this.x, this.y, this.velocity, "yellow");
+        drawVector(ctx, this.x, this.y, this.velocity, "lime");
 
         // Draw variables
         const offset = { x: this.x + this.radius, y: this.y + this.radius };
@@ -188,8 +189,17 @@ export class Projectile {
         ctx.fillText("y: " + this.y.toFixed(3), offset.x, offset.y + vertOffset);
     }
 
-    process(delta) {
-        this.velocity.multiplyBy(1 + this.acceleration * delta);
+    process(ctx, delta) {
+        // Process destruction
+        const canvasWidth = ctx.canvas.width;
+        const canvasHeight = ctx.canvas.height;
+
+        if (this.x < 0 || canvasWidth < this.x || this.y < 0 || canvasHeight < this.y) {
+            this.isDead = true;
+        }
+
+        // Process movement
+        this.velocity.multiplyBy(1 + Math.pow(this.acceleration, 2) * delta);
         this.x += this.velocity.x;
         this.y += this.velocity.y;
     }
