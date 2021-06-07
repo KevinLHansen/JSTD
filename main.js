@@ -47,21 +47,25 @@ function render() {
         projectile.draw(ctx);
     });
 
-    // Process player
-    player.process(delta);
-
-    // Process projectiles
-    projectiles.forEach((projectile) => {
-        projectile.process(ctx, delta);
-    });
-
-    // Debug drawing
+    // Draw debug
     if (debug) {
+        ctx.font = "bold 12px arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("width: " + canvas.width, 10, 15);
+        ctx.fillText("height: " + canvas.height, 10, 30);
         player.drawDebug(ctx);
         projectiles.forEach((projectile) => {
             projectile.drawDebug(ctx);
         });
     }
+
+    // Process player
+    player.process(ctx, delta);
+
+    // Process projectiles
+    projectiles.forEach((projectile) => {
+        projectile.process(ctx, delta);
+    });
 
     // Purge dead entities
     purge();
@@ -73,7 +77,7 @@ function render() {
 }
 
 // Purges "dead" entities
-function purge() {
+async function purge() {
     // Purge projectiles
     for (let i = 0; i < projectiles.length; i++) {
         const projectile = projectiles[i];

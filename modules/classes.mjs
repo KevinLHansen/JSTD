@@ -1,5 +1,6 @@
 import {
     drawVector as drawVector,
+    isOutsideCanvas as isOutsideCanvas,
     log as log
 } from "./functions.mjs";
 
@@ -97,7 +98,7 @@ export class Player {
         ctx.fillText("y: " + this.y.toFixed(3), offset.x, offset.y + vertOffset);
     }
 
-    process(delta) {
+    process(ctx, delta) {
 
         var targetVector = new Vector(0, 0);
 
@@ -147,8 +148,40 @@ export class Player {
             }
         }
 
-        this.x += this.velocity.x;
-        this.y += this.velocity.y;
+        const newX = this.x + this.velocity.x;
+        const newY = this.y + this.velocity.y;
+        const topAndLeft = isOutsideCanvas(ctx, newX - this.radius, newY - this.radius);
+        const bottomAndRight = isOutsideCanvas(ctx, newX + this.radius, newY + this.radius);
+        if (topAndLeft.isOutside) {
+            topAndLeft.sides.forEach((side) => {
+                switch (side) {
+                    case "top":
+                        this.velocity.y = 0;
+                        this.x = newX;
+                        break;
+                    case "left":
+                        this.velocity.x = 0;
+                        this.y = newY;
+                        break;
+                }
+            })
+        } else if (bottomAndRight.isOutside) {
+            bottomAndRight.sides.forEach((side) => {
+                switch (side) {
+                    case "bottom":
+                        this.velocity.y = 0;
+                        this.x = newX;
+                        break;
+                    case "right":
+                        this.velocity.x = 0;
+                        this.y = newY;
+                        break;
+                }
+            })
+        } else {
+            this.x = newX;
+            this.y = newY;
+        }
     }
 }
 
@@ -191,12 +224,7 @@ export class Projectile {
 
     process(ctx, delta) {
         // Process destruction
-        const canvasWidth = ctx.canvas.width;
-        const canvasHeight = ctx.canvas.height;
-
-        if (this.x < 0 || canvasWidth < this.x || this.y < 0 || canvasHeight < this.y) {
-            this.isDead = true;
-        }
+        this.isDead = isOutsideCanvas(ctx, this.x, this.y).isOutside;
 
         // Process movement
         this.velocity.multiplyBy(1 + Math.pow(this.acceleration, 2) * delta);

@@ -41,6 +41,28 @@ export function drawVector(ctx, x, y, vector, color) {
     ctx.fillText("y: " + vector.y.toFixed(3), vectorBase.x, vectorBase.y + 12);
 }
 
+export function isOutsideCanvas(ctx, x, y) {
+    const canvasWidth = ctx.canvas.width;
+    const canvasHeight = ctx.canvas.height;
+    var result = { sides: [], isOutside: false };
+
+    if (x < 0) {
+        result.sides.push("left");
+        result.isOutside = true;
+    } else if (x > canvasWidth) {
+        result.sides.push("right");
+        result.isOutside = true;
+    }
+    if (y < 0) {
+        result.sides.push("top");
+        result.isOutside = true;
+    } else if (y > canvasHeight) {
+        result.sides.push("bottom");
+        result.isOutside = true;
+    }
+    return result;
+}
+
 export function log(arg) {
     console.log(`[${performance.now().toFixed(3)}]\t` + arg);
 }
