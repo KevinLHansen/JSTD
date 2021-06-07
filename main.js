@@ -1,12 +1,14 @@
 import {
     Vector as Vector,
     Player as Player,
-    Projectile as Projectile
+    Projectile as Projectile,
+    TerrainObject as TerrainObject
 } from "./modules/classes.mjs";
 
 import {
     drawVector as drawVector,
-    log as log
+    log as log,
+    constructPath as constructPath
 } from "./modules/functions.mjs";
 
 const canvas = document.getElementById("game");
@@ -38,6 +40,8 @@ function render() {
     // Clear canvas
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    terrain.draw(ctx);
 
     // Draw player
     player.draw(ctx);
@@ -145,5 +149,35 @@ window.addEventListener("keyup", (event) => {
 });
 
 player = new Player(200, 200, 25, "white", 5, 5);
+
+var path = new Path2D();
+constructPath(path, [
+    { x: 0, y: 0 },
+    { x: -200, y: 0 },
+    { x: -25, y: 25 },
+    { x: 0, y: 200 },
+    { x: 25, y: 25 },
+    { x: 200, y: 0 },
+    { x: 25, y: -25 },
+    { x: 0, y: -200 },
+    { x: -25, y: -25 },
+    { x: -200, y: 0 },
+    { x: 0, y: 0 },
+    { x: -25, y: -25 },
+    { x: 0, y: 0 },
+    { x: 0, y: -200 },
+    { x: 0, y: 0 },
+    { x: 25, y: -25 },
+    { x: 0, y: 0 },
+    { x: 200, y: 0 },
+    { x: 0, y: 0 },
+    { x: 25, y: 25 },
+    { x: 0, y: 0 },
+    { x: 0, y: 200 },
+    { x: 0, y: 0 },
+    { x: -25, y: 25 }
+]);
+
+var terrain = new TerrainObject(canvas.width / 2, canvas.height / 2, path, "magenta");
 
 requestAnimationFrame(render);

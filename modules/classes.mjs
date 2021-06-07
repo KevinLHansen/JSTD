@@ -232,3 +232,20 @@ export class Projectile {
         this.y += this.velocity.y;
     }
 }
+
+export class TerrainObject {
+    constructor(x, y, path, color) {
+        this.x = x;
+        this.y = y;
+        this.path = path;
+        this.color = color;
+    }
+
+    draw(ctx) {
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2;
+        ctx.transform(1, 0, 0, 1, this.x, this.y);
+        ctx.stroke(this.path);
+        ctx.resetTransform();
+    }
+}

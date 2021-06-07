@@ -63,6 +63,14 @@ export function isOutsideCanvas(ctx, x, y) {
     return result;
 }
 
+export function constructPath(path, points) {
+    path.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+        const point = points[i];
+        path.lineTo(point.x, point.y);
+    }
+}
+
 export function log(arg) {
     console.log(`[${performance.now().toFixed(3)}]\t` + arg);
 }
