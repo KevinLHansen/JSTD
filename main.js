@@ -57,6 +57,9 @@ function render() {
     // Debug drawing
     if (debug) {
         player.drawDebug(ctx);
+        projectiles.forEach((projectile) => {
+            projectile.drawDebug(ctx);
+        });
     }
 
     // Manage timings
@@ -69,16 +72,17 @@ function render() {
 
 window.addEventListener("click", (event) => {
 
-    const vector = new Vector(event.x - player.x, event.y - player.y);
-    const unitVector = vector.getUnitVector();
+    const direction = new Vector(event.x - player.x, event.y - player.y).getUnitVector();
 
     projectiles.push(new Projectile(
-        player.x + unitVector.x * (player.radius + 5),
-        player.y + unitVector.y * (player.radius + 5),
+        player.x + direction.x * (player.radius + 5),
+        player.y + direction.y * (player.radius + 5),
         5,
         "white",
-        unitVector,
-        300
+        direction,
+        5,
+        10,
+        1.1
     ));
 });
 

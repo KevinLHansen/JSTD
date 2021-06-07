@@ -89,10 +89,10 @@ export class Player {
         if (this.right) { drawVector(ctx, this.x, this.y, this.rightVector, "yellow") }
         if (this.velocity.getLength() > 0.1) { drawVector(ctx, this.x, this.y, this.velocity, "lime") }
         // Draw variables
-        const offset = { x: this.x + 25, y: this.y + 25 };
+        const offset = { x: this.x + this.radius, y: this.y + this.radius };
         const vertOffset = 12;
         ctx.font = "bold 12px arial";
-        ctx.fillStyle = "green";
+        ctx.fillStyle = this.color;
         ctx.fillText("x: " + this.x.toFixed(3), offset.x, offset.y);
         ctx.fillText("y: " + this.y.toFixed(3), offset.x, offset.y + vertOffset);
     }
@@ -153,13 +153,19 @@ export class Player {
 }
 
 export class Projectile {
-    constructor(x, y, radius, color, vector, velocity) {
+    constructor(x, y, radius, color, direction, startSpeed, maxSpeed, acceleration) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
-        this.vector = vector;
-        this.velocity = velocity;
+        this.direction = direction;
+        this.startSpeed = startSpeed;
+        this.maxSpeed = maxSpeed;
+        this.acceleration = acceleration;
+        this.velocity = new Vector(
+            direction.x * startSpeed,
+            direction.y * startSpeed
+        );
     }
 
     draw(ctx) {
@@ -169,8 +175,22 @@ export class Projectile {
         ctx.fill();
     }
 
+    drawDebug(ctx) {
+        // Draw vector
+        drawVector(ctx, this.x, this.y, this.velocity, "yellow");
+
+        // Draw variables
+        const offset = { x: this.x + this.radius, y: this.y + this.radius };
+        const vertOffset = 12;
+        ctx.font = "bold 12px arial";
+        ctx.fillStyle = this.color;
+        ctx.fillText("x: " + this.x.toFixed(3), offset.x, offset.y);
+        ctx.fillText("y: " + this.y.toFixed(3), offset.x, offset.y + vertOffset);
+    }
+
     process(delta) {
-        this.x += this.vector.x * this.velocity * delta;
-        this.y += this.vector.y * this.velocity * delta;
+        this.velocity.multiplyBy(1 + this.acceleration * delta);
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
     }
 }
